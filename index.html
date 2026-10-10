@@ -1,0 +1,1506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Secure Programming project portfolio: a security review and Android user management demonstration.">
+<title>Secure User Management | TTTN3133 Secure Programming e-Portfolio</title>
+<style>
+/* ==========================================================================
+   Colored Pencil & Sky Blue Theme (彩铅与天蓝手绘风格)
+   Inspired by dreamy sky, colored pencil illustrations, and paper textures.
+   ========================================================================== */
+:root {
+  --sky-primary: #3da8e3;
+  --sky-light: #5dc5f5;
+  --sky-bright: #7cd6fa;
+  --sky-pale: #e8f5fd;
+  --sky-deep: #1b6892;
+  --sky-navy: #0e374c;
+  --ink: #113446;
+  --muted: #4e7184;
+  --paper-bg: #f2f8fc;
+  --paper-card: #ffffff;
+  --paper-cream: #fbf7ee;
+  --pencil-blue: #245772;
+  --pencil-line: #aed9ee;
+  --pencil-border: #234f66;
+  --crayon-yellow: #fde882;
+  --crayon-yellow-dark: #735912;
+  --crayon-orange: #f88b52;
+  --crayon-mint: #34b399;
+  --crayon-purple: #907ad6;
+  --shadow-sketch: 0 10px 30px rgba(27, 104, 146, 0.08), 0 2px 6px rgba(27, 104, 146, 0.04);
+  --shadow-lift: 0 16px 36px rgba(27, 104, 146, 0.14), 0 4px 10px rgba(27, 104, 146, 0.06);
+  --radius-card: 26px 22px 28px 24px / 24px 28px 22px 26px;
+  --radius-pill: 999px;
+  --radius-box: 20px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+
+body {
+  margin: 0;
+  background-color: var(--paper-bg);
+  background-image: 
+    radial-gradient(#c6e5f5 1px, transparent 1px),
+    radial-gradient(#dcf0fb 1px, var(--paper-bg) 1px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  color: var(--ink);
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+a { color: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+
+/* Sticky Top Navigation */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  border-bottom: 2px dashed var(--pencil-line);
+}
+
+.nav {
+  max-width: 1160px;
+  margin: auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  font-weight: 850;
+  font-size: 17px;
+  color: var(--sky-navy);
+  letter-spacing: -0.03em;
+}
+
+.brandmark {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px 10px 14px 11px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: linear-gradient(135deg, var(--sky-primary), var(--sky-deep));
+  box-shadow: 2px 2px 0 var(--pencil-border);
+  font-size: 19px;
+  transform: rotate(-3deg);
+  transition: transform 0.2s ease;
+}
+
+.brand:hover .brandmark {
+  transform: rotate(4deg) scale(1.06);
+}
+
+/* Desktop Navigation Links */
+.navlinks {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.navlinks a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 750;
+  padding: 7px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.navlinks a:hover {
+  color: var(--sky-deep);
+  background: var(--sky-pale);
+  transform: translateY(-1px);
+}
+
+/* Hamburger Menu Button (Mobile Toggle) */
+.nav-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border: 2px solid var(--pencil-border);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--pencil-border);
+  cursor: pointer;
+  padding: 8px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+  z-index: 60;
+}
+
+.nav-toggle:hover {
+  background: var(--sky-pale);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--pencil-border);
+}
+
+.nav-toggle span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: var(--sky-navy);
+  border-radius: 3px;
+  transition: all 0.25s ease;
+  transform-origin: center;
+}
+
+/* Hamburger Morph to X when Open */
+.nav-toggle.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-toggle.open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.nav-toggle.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+main {
+  max-width: 1160px;
+  margin: auto;
+  padding: 34px 24px 80px;
+}
+
+/* Hero Section: Sky-Blue Colored-Pencil Scenery */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px 32px 40px 34px / 34px 38px 32px 36px;
+  background: linear-gradient(180deg, #38a5e1 0%, #4cbcf0 55%, #6ad0f8 100%);
+  color: white;
+  padding: 60px 54px;
+  box-shadow: 0 20px 50px rgba(27, 104, 146, 0.2), 0 4px 0 var(--pencil-border);
+  border: 3px solid var(--pencil-border);
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -50px;
+  width: 440px;
+  height: 300px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  left: -20px;
+  right: -20px;
+  height: 70px;
+  background: #fbf7ee;
+  border-radius: 60% 60% 0 0 / 100% 100% 0 0;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #fff9d2;
+  font-weight: 850;
+  background: rgba(14, 55, 76, 0.25);
+  padding: 5px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+.hero h1 {
+  font-size: clamp(36px, 5.5vw, 64px);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+  margin: 16px 0 20px;
+  max-width: 650px;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 var(--pencil-border);
+}
+
+.hero p {
+  color: #ebf7ff;
+  font-size: 16px;
+  max-width: 580px;
+  margin: 0 0 26px;
+  text-shadow: 0 1px 2px rgba(14, 55, 76, 0.25);
+}
+
+.actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: 16px 14px 18px 15px;
+  text-decoration: none;
+  font-weight: 850;
+  font-size: 14.5px;
+  background: var(--crayon-yellow);
+  color: #453408;
+  border: 2px solid var(--pencil-border);
+  box-shadow: 3px 3px 0 var(--pencil-border);
+  transition: all 0.18s ease;
+  cursor: pointer;
+}
+
+.button:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--pencil-border);
+  background: #fff099;
+}
+
+.button.secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 3px 3px 0 rgba(14, 55, 76, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.button.secondary:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(14, 55, 76, 0.35);
+}
+
+.profile-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+}
+
+.pill {
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-pill);
+  padding: 6px 13px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Hero Art Scene: Cloud-Hair Mascot + Computer + Watercolor Clouds */
+.hero-art {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.hero-scene-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-svg-art {
+  width: 100%;
+  height: auto;
+  max-width: 440px;
+  filter: drop-shadow(0 14px 28px rgba(14, 55, 76, 0.22));
+}
+
+/* Post-It Sticky Note (Matching Reference Image Style) */
+.sticky-note {
+  position: relative;
+  background: #fde882;
+  color: #4e3e0e;
+  padding: 16px 20px;
+  border-radius: 12px 14px 16px 11px;
+  box-shadow: 3px 5px 0 rgba(14, 55, 76, 0.25), 0 10px 24px rgba(14, 55, 76, 0.15);
+  border: 2px solid #574612;
+  width: 250px;
+  transform: rotate(2.5deg);
+  transition: transform 0.25s ease;
+  margin-top: -10px;
+}
+
+.sticky-note:hover {
+  transform: rotate(0deg) scale(1.03);
+}
+
+.sticky-pin {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  background: #ff5a5f;
+  border-radius: 50%;
+  border: 2px solid #4a1215;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+}
+
+.sticky-kicker {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 900;
+  color: #8c711a;
+  margin-top: 2px;
+}
+
+.sticky-title {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 4px 0 2px;
+  color: #2e2405;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+.sticky-sub {
+  font-size: 11px;
+  color: #725b17;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.sticky-foot {
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding-top: 6px;
+  border-top: 1.5px dashed #d5ba52;
+  color: #8c711a;
+}
+
+/* Section Headings */
+.section {
+  padding: 74px 0 0;
+}
+
+.section-head {
+  display: block;
+  margin-bottom: 25px;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--sky-deep);
+  background: var(--sky-pale);
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--pencil-line);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 850;
+  font-size: 11px;
+}
+
+.section h2 {
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+  color: var(--sky-navy);
+  margin: 10px 0 0;
+}
+
+/* Grids & Cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.card {
+  background: var(--paper-card);
+  border: 2px solid var(--pencil-line);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  box-shadow: var(--shadow-sketch);
+  transition: all 0.22s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--sky-primary);
+}
+
+.card h3 {
+  margin: 8px 0 7px;
+  letter-spacing: -0.025em;
+  color: var(--sky-navy);
+  font-size: 17px;
+}
+
+.card p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--sky-pale);
+  border: 1.5px solid var(--pencil-line);
+  font-size: 21px;
+}
+
+.tag {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--sky-deep);
+  background: var(--sky-pale);
+  border: 1px solid var(--pencil-line);
+  border-radius: var(--radius-pill);
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* Security Principles: Pastel Colored-Pencil Cards */
+.principles {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.principle {
+  border-radius: 20px 18px 22px 19px / 19px 22px 18px 20px;
+  padding: 18px 16px;
+  background: #ffffff;
+  border: 2px solid var(--pencil-line);
+  box-shadow: 0 4px 14px rgba(27, 104, 146, 0.05);
+  transition: all 0.2s ease;
+}
+
+.principle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(27, 104, 146, 0.1);
+  border-color: var(--sky-deep);
+}
+
+.principle strong {
+  display: block;
+  font-size: 14.5px;
+  color: var(--sky-navy);
+  margin-bottom: 3px;
+}
+
+.principle span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+/* Labs / Security Cases Grid */
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.case {
+  padding: 24px;
+  border-radius: 26px 22px 28px 24px / 24px 28px 22px 26px;
+  background: var(--paper-card);
+  border: 2px solid var(--pencil-line);
+  box-shadow: var(--shadow-sketch);
+  transition: all 0.2s ease;
+}
+
+.case:hover {
+  border-color: var(--sky-primary);
+  box-shadow: var(--shadow-lift);
+}
+
+.case-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.case-num {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--sky-deep);
+  background: var(--sky-pale);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--pencil-line);
+  letter-spacing: 0.12em;
+}
+
+.status {
+  font-size: 10.5px;
+  border-radius: var(--radius-pill);
+  padding: 5px 10px;
+  background: #e1f7ec;
+  color: #0b6848;
+  border: 1.5px solid #a9e4cb;
+  font-weight: 850;
+  letter-spacing: 0.02em;
+}
+
+.case h3 {
+  margin: 10px 0 8px;
+  color: var(--sky-navy);
+  font-size: 18px;
+}
+
+.case p {
+  margin: 6px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.case b {
+  color: var(--ink);
+}
+
+.case code {
+  background: var(--sky-pale);
+  color: var(--sky-deep);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  border: 1px solid #c7e5f5;
+}
+
+/* Video Embeds */
+.video-embed {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #0e3244;
+  margin: 14px 0 6px;
+  border: 2px solid var(--pencil-line);
+  box-shadow: 0 6px 18px rgba(14, 50, 68, 0.12);
+}
+
+.video-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.video-embed small {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(14, 50, 68, 0.92);
+  color: #e5f4fc;
+  text-align: center;
+  padding: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.evidence-links {
+  font-size: 12.5px !important;
+  margin: 9px 0 12px !important;
+}
+
+.evidence-links a {
+  color: var(--sky-deep);
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.evidence-links a:hover {
+  text-decoration: underline;
+}
+
+/* Project Card */
+.project-card {
+  border: 2.5px solid var(--pencil-line);
+  background: #ffffff;
+}
+
+.project-card:hover {
+  border-color: var(--sky-primary);
+}
+
+.github-button {
+  margin-top: 8px;
+  background: var(--sky-primary);
+  color: white;
+  border-color: var(--pencil-border);
+}
+
+.github-button:hover {
+  background: var(--sky-deep);
+}
+
+/* Timeline */
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.step {
+  border-top: 4px solid var(--sky-primary);
+  border-left: 1.5px solid var(--pencil-line);
+  border-right: 1.5px solid var(--pencil-line);
+  border-bottom: 1.5px solid var(--pencil-line);
+  padding: 16px 14px;
+  background: #fff;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 4px 12px rgba(27, 104, 146, 0.05);
+}
+
+.step strong {
+  font-size: 13.5px;
+  color: var(--sky-navy);
+}
+
+.step p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 5px 0 0;
+}
+
+/* Linkboxes */
+.linkbox {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+  padding: 16px 18px;
+  background: white;
+  border: 2px solid var(--pencil-line);
+  border-radius: 16px;
+  margin-top: 12px;
+  box-shadow: 0 4px 12px rgba(27, 104, 146, 0.04);
+  transition: all 0.2s ease;
+}
+
+.linkbox:hover {
+  border-color: var(--sky-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(27, 104, 146, 0.08);
+}
+
+.linkbox span {
+  font-size: 14px;
+  font-weight: 750;
+  color: var(--sky-navy);
+}
+
+.linkbox a {
+  font-size: 12.5px;
+  color: var(--sky-deep);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.linkbox a:hover {
+  text-decoration: underline;
+}
+
+/* Reflection Section */
+.reflection {
+  background: linear-gradient(145deg, #13455f 0%, #1d5f81 100%);
+  color: white;
+  border-radius: 28px 24px 30px 26px;
+  padding: 36px;
+  border: 2.5px solid var(--pencil-border);
+  box-shadow: 0 16px 40px rgba(19, 69, 95, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.reflection::after {
+  content: "✻";
+  position: absolute;
+  top: 20px;
+  right: 28px;
+  font-size: 40px;
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.reflection h3 {
+  margin: 0 0 10px;
+  color: #fff9d2;
+  font-size: 20px;
+}
+
+.reflection p {
+  color: #e5f4fd;
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+/* Notices / Post-it Banners */
+.notice {
+  font-size: 12.5px;
+  color: #174c65;
+  background: #e8f5fc;
+  border: 2px dashed #9acde8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 16px 0 0;
+  line-height: 1.6;
+}
+
+.notice b {
+  color: var(--sky-navy);
+}
+
+/* Footer */
+.footer {
+  border-top: 2px dashed var(--pencil-line);
+  padding: 28px 0 0;
+  margin-top: 70px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.anchor {
+  scroll-margin-top: 90px;
+}
+
+/* Responsive Styles & Hamburger Menu Transformation */
+@media (max-width: 850px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .navlinks {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(16px);
+    border-bottom: 2.5px dashed var(--pencil-line);
+    box-shadow: 0 16px 36px rgba(27, 104, 146, 0.14);
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .navlinks.open {
+    max-height: 420px;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 16px 20px 22px;
+  }
+
+  .navlinks a {
+    width: 100%;
+    padding: 11px 16px;
+    font-size: 15px;
+    border-bottom: 1px dashed #e2eef7;
+    border-radius: 10px;
+  }
+
+  .navlinks a:last-child {
+    border-bottom: none;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 44px 28px;
+    gap: 30px;
+  }
+
+  .hero-art {
+    margin-top: 5px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .principles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .timeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 570px) {
+  .nav {
+    padding: 12px 18px;
+  }
+
+  main {
+    padding: 20px 15px 55px;
+  }
+
+  .hero {
+    padding: 34px 20px;
+    border-radius: 26px;
+  }
+
+  .section {
+    padding-top: 55px;
+  }
+
+  .grid, .case-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .principles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .timeline {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer {
+    display: block;
+  }
+
+  .footer span {
+    display: block;
+    margin-top: 6px;
+  }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <nav class="nav" aria-label="Main navigation">
+    <a class="brand" href="#home"><span class="brandmark">☁</span> Secure User Management</a>
+    
+    <!-- Mobile Hamburger Toggle Button -->
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Navigation Menu (Transforms on Mobile) -->
+    <div class="navlinks">
+      <a href="#labs">Labs</a>
+      <a href="#projects">Projects</a>
+      <a href="#reflection">Reflection</a>
+      <a href="#skills">Skills</a>
+      <a href="#resources">Resources</a>
+      <a href="#submission">Submit</a>
+    </div>
+  </nav>
+</header>
+<main>
+<section class="hero anchor" id="home">
+  <div class="hero-content">
+    <div class="eyebrow">✻ TTTN3133 Secure Programming · e-Portfolio</div>
+    <h1>Building safer user management.</h1>
+    <p>A learning portfolio documenting the review, implementation, and testing of security controls in an Android user management application.</p>
+    <div class="actions">
+      <a class="button" href="#projects">Explore the project ↓</a>
+      <a class="button secondary" href="#labs">View security cases</a>
+    </div>
+    <div class="profile-strip">
+      <span class="pill">Course: TTTN3133 Secure Programming</span>
+      <span class="pill">Instructor: Mr. Nelson</span>
+      <span class="pill">Lead: DAI SHUMAN (A214536)</span>
+    </div>
+  </div>
+
+  <!-- Hero Art: Cloud-Hair Character + Laptop Computer + Clouds Scene -->
+  <div class="hero-art" aria-hidden="true">
+    <div class="hero-scene-wrap">
+      <svg class="hero-svg-art" viewBox="0 0 460 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Gradients for Cloud, Laptop, Character -->
+          <linearGradient id="cloudGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="70%" stop-color="#ebf6fc"/>
+            <stop offset="100%" stop-color="#c6e4f5"/>
+          </linearGradient>
+          <linearGradient id="cloudGradBack" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#b6def5" stop-opacity="0.95"/>
+          </linearGradient>
+          <linearGradient id="coatGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#fed634"/>
+            <stop offset="50%" stop-color="#f8ba16"/>
+            <stop offset="100%" stop-color="#eb9f06"/>
+          </linearGradient>
+          <linearGradient id="screenGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#143e53"/>
+            <stop offset="100%" stop-color="#0a2533"/>
+          </linearGradient>
+          <linearGradient id="laptopBodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#eaf3f8"/>
+            <stop offset="100%" stop-color="#b8d5e5"/>
+          </linearGradient>
+          <filter id="softGlow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0e374c" flood-opacity="0.15"/>
+          </filter>
+        </defs>
+
+        <!-- Background Fluffy Clouds (Image 2 Style) -->
+        <g filter="url(#softGlow)">
+          <!-- Big background cumulus cloud -->
+          <path d="M70 290 C40 290 20 265 25 240 C10 230 5 200 20 185 C20 160 45 140 70 145 C85 120 120 110 145 125 C170 100 215 100 235 125 C260 115 295 130 300 155 C325 155 345 175 340 200 C360 215 360 245 340 265 C345 285 325 295 305 290 Z" fill="url(#cloudGradBack)" stroke="#9bc8e2" stroke-width="2.5" stroke-dasharray="8 3"/>
+          <!-- Right side floating cloud -->
+          <path d="M290 140 C280 125 290 105 310 105 C320 90 345 90 355 100 C370 95 390 105 395 120 C410 125 415 145 405 160 C415 175 405 195 385 195 C375 205 350 205 340 195 C325 200 305 190 300 175 C285 170 280 150 290 140 Z" fill="url(#cloudGrad)" stroke="#a1cde5" stroke-width="2"/>
+        </g>
+
+        <!-- The Cloud-Hair Character (Image 1 Style) -->
+        <g id="character-figure" transform="translate(45, 20)">
+          <!-- Cloud Hair (Puffy White Cloud Surrounding Head) -->
+          <g filter="url(#softGlow)">
+            <!-- Outer cloud hair outline & fill -->
+            <path d="M120 130 C90 130 70 105 75 80 C55 70 50 40 65 25 C65 5 95 -10 120 -5 C135 -30 175 -35 200 -15 C225 -35 270 -25 285 5 C310 10 325 35 320 60 C335 75 335 105 315 125 C320 145 300 160 280 155 C265 170 235 170 220 155 C200 165 175 160 165 150 C145 160 125 150 120 130 Z" 
+                  fill="url(#cloudGrad)" stroke="#89bcd9" stroke-width="3"/>
+            <!-- Colored-pencil texture strokes on cloud hair -->
+            <path d="M90 60 Q120 40 140 65" stroke="#a7d3ec" stroke-width="2" fill="none"/>
+            <path d="M240 30 Q270 20 285 50" stroke="#a7d3ec" stroke-width="2" fill="none"/>
+            <path d="M160 10 Q195 -10 230 10" stroke="#a7d3ec" stroke-width="2" fill="none"/>
+            <path d="M80 100 Q105 85 125 105" stroke="#a7d3ec" stroke-width="2" fill="none"/>
+            <path d="M275 110 Q295 90 310 115" stroke="#a7d3ec" stroke-width="2" fill="none"/>
+          </g>
+
+          <!-- Legs & Boots -->
+          <g id="legs" transform="translate(160, 260)">
+            <!-- Striped Socks -->
+            <rect x="18" y="0" width="16" height="30" fill="#fff1e0" rx="3"/>
+            <line x1="18" y1="6" x2="34" y2="6" stroke="#f88b52" stroke-width="3"/>
+            <line x1="18" y1="14" x2="34" y2="14" stroke="#f88b52" stroke-width="3"/>
+            <line x1="18" y1="22" x2="34" y2="22" stroke="#f88b52" stroke-width="3"/>
+
+            <rect x="46" y="0" width="16" height="30" fill="#fff1e0" rx="3"/>
+            <line x1="46" y1="6" x2="62" y2="6" stroke="#f88b52" stroke-width="3"/>
+            <line x1="46" y1="14" x2="62" y2="14" stroke="#f88b52" stroke-width="3"/>
+            <line x1="46" y1="22" x2="62" y2="22" stroke="#f88b52" stroke-width="3"/>
+
+            <!-- Green Rainboots -->
+            <path d="M14 26 L36 26 L36 44 L10 44 C8 35 10 28 14 26 Z" fill="#1b5a68" stroke="#113e48" stroke-width="2"/>
+            <path d="M44 26 L66 26 L66 44 L40 44 C38 35 40 28 44 26 Z" fill="#1b5a68" stroke="#113e48" stroke-width="2"/>
+          </g>
+
+          <!-- Yellow Raincoat Body -->
+          <g id="body-coat">
+            <!-- Main Coat Trapezoid -->
+            <path d="M150 145 L245 145 L275 270 L125 270 Z" fill="url(#coatGrad)" stroke="#3f3108" stroke-width="2.5"/>
+            <!-- Coat Collar -->
+            <path d="M145 140 Q195 155 250 140 L255 160 Q195 175 140 160 Z" fill="#f8b612" stroke="#3f3108" stroke-width="2"/>
+            <!-- Center Button Line -->
+            <line x1="195" y1="160" x2="195" y2="270" stroke="#3f3108" stroke-width="2" stroke-dasharray="3 3"/>
+            <!-- Snaps / Buttons -->
+            <circle cx="195" cy="180" r="3" fill="#1b5266"/>
+            <circle cx="195" cy="210" r="3" fill="#1b5266"/>
+            <circle cx="195" cy="240" r="3" fill="#1b5266"/>
+
+            <!-- Blue Pocket (Signature Feature) -->
+            <path d="M225 210 L255 210 Q260 250 240 255 Q220 250 225 210 Z" fill="#19597a" stroke="#0e374c" stroke-width="2"/>
+
+            <!-- Mouse Cursor Pointer on Collar (From Reference Image) -->
+            <polygon points="198,168 206,186 202,187 205,194 200,196 197,189 193,191" fill="#ffffff" stroke="#113446" stroke-width="1.5"/>
+
+            <!-- Left Arm / Hand making "OK" sign (👌) -->
+            <path d="M145 160 L108 190 Q105 200 115 205 L135 185" fill="#f8ba16" stroke="#3f3108" stroke-width="2"/>
+            <circle cx="106" cy="192" r="10" fill="#ffd1b3" stroke="#3f3108" stroke-width="1.8"/>
+            <circle cx="103" cy="190" r="3.5" fill="#ffd1b3" stroke="#3f3108" stroke-width="1.5"/>
+
+            <!-- Right Arm extending towards Laptop -->
+            <path d="M248 165 L285 205 Q295 215 285 225 L255 195" fill="#f8ba16" stroke="#3f3108" stroke-width="2"/>
+            <circle cx="288" cy="215" r="9" fill="#ffd1b3" stroke="#3f3108" stroke-width="1.8"/>
+          </g>
+
+          <!-- Face & Expression (Cute Colored-Pencil Style) -->
+          <g id="face" transform="translate(150, 75)">
+            <!-- Face Base -->
+            <ellipse cx="48" cy="40" rx="38" ry="34" fill="#fedec7" stroke="#3f3108" stroke-width="2"/>
+            <!-- Orange Hair Bangs underneath cloud -->
+            <path d="M18 20 Q48 38 78 20 Q55 30 38 28 Z" fill="#f06f3a"/>
+            <!-- Soft Blush Circles -->
+            <ellipse cx="26" cy="46" rx="8" ry="5" fill="#f97864" opacity="0.6"/>
+            <ellipse cx="70" cy="46" rx="8" ry="5" fill="#f97864" opacity="0.6"/>
+            <!-- Cute Eyes -->
+            <circle cx="36" cy="38" r="4.5" fill="#143444"/>
+            <circle cx="38" cy="36" r="1.5" fill="#ffffff"/>
+            <circle cx="60" cy="38" r="4.5" fill="#143444"/>
+            <circle cx="62" cy="36" r="1.5" fill="#ffffff"/>
+            <!-- Eyebrows -->
+            <path d="M30 30 Q36 28 42 31" stroke="#873e16" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M54 31 Q60 28 66 30" stroke="#873e16" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <!-- Nose & Smile -->
+            <path d="M48 38 L46 44 L50 44" stroke="#c95726" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M43 50 Q48 54 53 50" stroke="#3f3108" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+        </g>
+
+        <!-- Laptop Computer (Integrated with Clouds) -->
+        <g id="laptop-scene" transform="translate(245, 175)" filter="url(#softGlow)">
+          <!-- Laptop Base / Cloud Desk Support -->
+          <ellipse cx="90" cy="155" rx="100" ry="25" fill="url(#cloudGrad)" stroke="#98c9e5" stroke-width="2"/>
+
+          <!-- Laptop Base / Keyboard Deck -->
+          <polygon points="15,130 165,130 185,150 -5,150" fill="url(#laptopBodyGrad)" stroke="#1a475d" stroke-width="2.5"/>
+          <!-- Keyboard Area -->
+          <polygon points="25,133 155,133 170,146 10,146" fill="#16394a" opacity="0.85"/>
+          <!-- Trackpad -->
+          <rect x="75" y="146" width="30" height="3" fill="#a4c7db" rx="1"/>
+
+          <!-- Laptop Display Screen (Open & Angled) -->
+          <polygon points="15,40 165,40 165,130 15,130" fill="url(#screenGrad)" stroke="#1a475d" stroke-width="3" rx="6"/>
+          
+          <!-- Screen Glass / Content -->
+          <rect x="22" y="47" width="136" height="76" fill="#0d2837" rx="3"/>
+          <!-- Glowing Sky-Blue Terminal Content -->
+          <rect x="28" y="52" width="20" height="4" fill="#5ec8f6" rx="1"/>
+          <rect x="52" y="52" width="40" height="4" fill="#aee2fa" rx="1"/>
+          <rect x="28" y="60" width="80" height="3" fill="#89d4f8" opacity="0.8" rx="1"/>
+          <rect x="28" y="66" width="60" height="3" fill="#89d4f8" opacity="0.6" rx="1"/>
+          
+          <!-- Shield Icon in Center of Screen (Security Android App) -->
+          <path d="M90 75 L106 82 C106 96 90 106 90 106 C90 106 74 96 74 82 Z" 
+                fill="#3da8e3" stroke="#e8f5fd" stroke-width="1.8"/>
+          <path d="M86 89 L89 93 L96 85" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+          <!-- Code Badge on Screen -->
+          <rect x="28" y="112" width="70" height="8" fill="#194c63" rx="2"/>
+          <text x="32" y="118" font-size="6" fill="#7cd8fb" font-family="monospace" font-weight="bold">Room DB · RBAC</text>
+
+          <!-- Little Apple/Android Glow Logo on Back (if seen) -->
+          <circle cx="90" cy="36" r="3" fill="#ffffff" opacity="0.6"/>
+        </g>
+
+        <!-- Decorative Whimsical Colored-Pencil Stars -->
+        <g id="sparkles">
+          <!-- Star 1 -->
+          <path d="M60 40 L63 50 L73 53 L63 56 L60 66 L57 56 L47 53 L57 50 Z" fill="#ffe37d" stroke="#523e06" stroke-width="1.2"/>
+          <!-- Star 2 -->
+          <path d="M410 70 L412 77 L419 79 L412 81 L410 88 L408 81 L401 79 L408 77 Z" fill="#ffffff" stroke="#194c63" stroke-width="1.2"/>
+          <!-- Star 3 -->
+          <path d="M220 15 L222 20 L227 21 L222 22 L220 27 L218 22 L213 21 L218 20 Z" fill="#ffe37d" stroke="#523e06" stroke-width="1"/>
+        </g>
+
+        <!-- Soft Cloud Forefront Floor Pill -->
+        <path d="M20 340 C80 320 160 330 220 345 C280 325 360 325 440 345 L440 375 L20 375 Z" fill="#ffffff" opacity="0.9" stroke="#b2dbf0" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <!-- Post-It Sticky Note (Echoing Reference Image) -->
+    <div class="sticky-note">
+      <div class="sticky-pin"></div>
+      <div class="sticky-kicker">SYSTEM STATUS</div>
+      <div class="sticky-title">Defense in Depth</div>
+      <div class="sticky-sub">Zero Trust Verified</div>
+      <div class="sticky-foot">SECURITY REPORT / 001</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="principles-title">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Security foundations</div>
+      <h2 id="principles-title">Principles in practice</h2>
+    </div>
+  </div>
+  <div class="principles">
+    <div class="principle"><strong>Authentication</strong><span>Verify identity</span></div>
+    <div class="principle"><strong>Authorization</strong><span>Limit permitted actions</span></div>
+    <div class="principle"><strong>Confidentiality</strong><span>Protect sensitive data</span></div>
+    <div class="principle"><strong>Data Integrity</strong><span>Prevent invalid changes</span></div>
+    <div class="principle"><strong>Non-Repudiation</strong><span>Keep traceable records</span></div>
+  </div>
+</section>
+
+<section class="section anchor" id="labs">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Labs · Exercise 1</div>
+      <h2>Security cases</h2>
+    </div>
+  </div>
+  <div class="case-grid">
+    <article class="case">
+      <div class="case-top">
+        <span class="case-num">CASE 01 · AUTHORIZATION</span>
+        <span class="status">Implemented · Verified</span>
+      </div>
+      <h3>Role-Based Access Control</h3>
+      <p><b>Baseline:</b> Repository methods for reading all users/logs and changing roles or lock status initially lacked actor-role checks; hiding the admin screen was the only barrier.</p>
+      <p><b>Code change:</b> <code>UserRepository.requireAdmin()</code> now checks the active account's current Room role at the data boundary. Admin actions log the acting administrator.</p>
+      <p><b>Principles:</b> Authorization · Data Integrity</p>
+      <p><b>Reflection:</b> Enforcing role-based access checks at the repository boundary guarantees that unauthorized users cannot execute privileged operations even if the user interface state is tampered with.</p>
+      <div class="video-embed">
+        <iframe loading="lazy" title="Case 1 · Role-Based Access Control Video Demo" src="https://www.youtube.com/embed/QeDwXMIdTKI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <small>Case 1 Video Demonstration (Unlisted)</small>
+      </div>
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserRepository.kt</code> · Run test (Live): <a href="https://youtu.be/QeDwXMIdTKI" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+    </article>
+
+    <article class="case">
+      <div class="case-top">
+        <span class="case-num">CASE 02 · DATA PROTECTION</span>
+        <span class="status">Implemented · Verified</span>
+      </div>
+      <h3>Password confidentiality and data minimization</h3>
+      <p><b>Baseline:</b> Admin listing returned full user entities, including password hashes and salts, although the UI only needed profile and role fields.</p>
+      <p><b>Code change:</b> The Room query now returns an <code>AdminUserSummary</code> projection without credential fields. Passwords use PBKDF2-HMAC-SHA256 with a random per-user salt and constant-time byte comparison.</p>
+      <p><b>Principles:</b> Confidentiality</p>
+      <p><b>Reflection:</b> Sensitive credential metadata and password hashes must never be exposed to the presentation layer. By employing data minimization queries and cryptographic PBKDF2 salting, offline cracking risks are significantly mitigated.</p>
+      <div class="video-embed">
+        <iframe loading="lazy" title="Case 2 · Password Confidentiality & Data Minimization Video Demo" src="https://www.youtube.com/embed/zpfu-e947wc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <small>Case 2 Video Demonstration (Unlisted)</small>
+      </div>
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserData.kt</code>, <code>SecurityUtils.kt</code> · Run test (Live): <a href="https://youtu.be/zpfu-e947wc" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+    </article>
+
+    <article class="case">
+      <div class="case-top">
+        <span class="case-num">CASE 03 · SQL INJECTION</span>
+        <span class="status">Implemented · Verified</span>
+      </div>
+      <h3>Parameterized Room queries</h3>
+      <p><b>Baseline:</b> The supplied DAO already used Room bind parameters such as <code>:username</code> and <code>:id</code>; no concatenated user-controlled SQL was found. This is a secure control, not a claimed SQL injection vulnerability.</p>
+      <p><b>Code change:</b> Preserve the bound queries and add restrictive username validation; do not construct query strings from user input.</p>
+      <p><b>Principles:</b> Data Integrity · Confidentiality</p>
+      <p><b>Reflection:</b> Utilizing Room parameterized queries effectively neutralizes SQL injection threats by treating user inputs as strict literals rather than executable SQL commands.</p>
+      <div class="video-embed">
+        <iframe loading="lazy" title="Case 3 · Parameterized Room Queries (SQL Injection Prevention) Video Demo" src="https://www.youtube.com/embed/gWAKd-BSggk" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <small>Case 3 Video Demonstration (Unlisted)</small>
+      </div>
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserData.kt</code> · Run test (Live): <a href="https://youtu.be/gWAKd-BSggk" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+    </article>
+
+    <article class="case">
+      <div class="case-top">
+        <span class="case-num">CASE 04 · LOGIN TEST</span>
+        <span class="status">Implemented · Verified</span>
+      </div>
+      <h3>Account lockout and generic responses</h3>
+      <p><b>Baseline:</b> The app counted failed attempts and locked an account after three failures, but returned a distinct message when a known account was locked.</p>
+      <p><b>Code change:</b> Locked and invalid-credential paths now return the same generic response while security events remain logged without passwords.</p>
+      <p><b>Principles:</b> Authentication · Confidentiality</p>
+      <p><b>Reflection:</b> Implementing automated account lockout with generic error messages protects against user enumeration and automated brute-force attacks while maintaining defense traceability in security logs.</p>
+      <div class="video-embed">
+        <iframe loading="lazy" title="Case 4 · Account Lockout & Generic Responses (Login Test) Video Demo" src="https://www.youtube.com/embed/YZWW2nDQklg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <small>Case 4 Video Demonstration (Unlisted)</small>
+      </div>
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserRepository.kt</code> · Run test (Live): <a href="https://youtu.be/YZWW2nDQklg" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+    </article>
+  </div>
+  <p class="notice"><b>Verification Status:</b> All four security vulnerability solutions and defense-in-depth controls have been successfully integrated, validated on Android Studio emulator, and demonstrated with live unlisted YouTube walkthrough videos.</p>
+</section>
+
+<section class="section anchor" id="projects">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Projects</div>
+      <h2>Secure User Management</h2>
+    </div>
+  </div>
+  <article class="case project-card">
+    <div class="case-top">
+      <span class="case-num">PROJECT 2 · ANDROID APPLICATION</span>
+      <span class="status">Live VSR Demonstration Available</span>
+    </div>
+    <h3>Secure User Management</h3>
+    <p><b>Scenario &amp; Problem Statement:</b> Modern Android mobile applications handle critical personal identities and credentials, making them prime targets for unauthorized access, data exfiltration, and injection attacks. Secure User Management demonstrates a defense-in-depth architecture addressing authentication weaknesses, insecure direct object references, and data exposure in local storage. By implementing Role-Based Access Control, cryptographic credential protection, parameterized database queries, and brute-force account lockout, the project provides a hardened and verifiable user lifecycle solution.</p>
+    <div class="video-embed">
+      <iframe loading="lazy" title="Secure User Management Project Demonstration (VSR)" src="https://www.youtube.com/embed/0SGxBj4CvEg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <small>Project VSR Video Demonstration (Unlisted)</small>
+    </div>
+    <p><b>Project Reflection:</b> Through this project, our team gained practical experience bridging theoretical security principles with real-world Android implementation. We demonstrated that security cannot be treated as an afterthought in UI layers, but must be strictly enforced at repository and data boundaries. Systematic code auditing and live video verifications reinforced our commitment to defense-in-depth engineering.</p>
+    <div class="actions" style="margin-top:12px">
+      <a class="button github-button" href="https://github.com/zhoud5508-rgb/SecureUserManagement" target="_blank" rel="noopener noreferrer">Open GitHub repository · published source</a>
+      <a class="button secondary" href="https://youtu.be/0SGxBj4CvEg" target="_blank" rel="noopener noreferrer" style="color:var(--ink);border-color:var(--pencil-line);background:white;box-shadow:2px 2px 0 var(--pencil-border)">Watch VSR on YouTube ↗</a>
+    </div>
+  </article>
+
+  <div class="grid" style="margin-top:18px">
+    <article class="card">
+      <div class="icon">📱</div>
+      <h3>Application Architecture</h3>
+      <p>Registration, authentication, profile, password change, and role-based management screens built with modern Jetpack Compose and MVVM pattern.</p>
+      <span class="tag">Kotlin · Jetpack Compose</span>
+    </article>
+    <article class="card">
+      <div class="icon">🗄️</div>
+      <h3>Local Data Boundary</h3>
+      <p>Room database entities and parameterized DAO queries safeguarding against SQL injection and enforcing strict user data isolation.</p>
+      <span class="tag">Room Database</span>
+    </article>
+    <article class="card">
+      <div class="icon">🔐</div>
+      <h3>Security Controls</h3>
+      <p>Salted PBKDF2 password hashing, login attempt throttling, input sanitization, and security audit log tracking across data boundaries.</p>
+      <span class="tag">Verified &amp; Tested</span>
+    </article>
+  </div>
+
+  <div class="timeline" style="margin-top:20px">
+    <div class="step"><strong>01 · Review</strong><p>Map core security principles to codebase.</p></div>
+    <div class="step"><strong>02 · Build</strong><p>Assemble Android architecture and baseline.</p></div>
+    <div class="step"><strong>03 · Fix</strong><p>Implement targeted cryptographic &amp; access controls.</p></div>
+    <div class="step"><strong>04 · Verify</strong><p>Record emulator tests and validate defenses.</p></div>
+  </div>
+
+  <div class="linkbox">
+    <span>Source repository</span>
+    <a href="https://github.com/zhoud5508-rgb/SecureUserManagement" target="_blank" rel="noopener noreferrer">https://github.com/zhoud5508-rgb/SecureUserManagement</a>
+  </div>
+</section>
+
+<section class="section anchor" id="reflection">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Reflection</div>
+      <h2>Team learning reflection</h2>
+    </div>
+  </div>
+  <div class="reflection">
+    <h3>Team Reflection &amp; Learning Journey</h3>
+    <p>Developing the Secure User Management e-Portfolio provided our team with deep insights into defensive application architecture and threat modeling. We discovered that implementing robust security controls—such as PBKDF2 credential hashing, strict RBAC authorization boundaries, and parameterized Room queries—is essential for mitigating common mobile vulnerabilities. Collaborative code reviews, continuous emulator testing, and live video validations helped us verify each defense mechanism objectively. This hands-on journey strengthened our collective engineering rigor and taught us to design resilient software from the ground up.</p>
+  </div>
+  <div class="grid" style="margin-top:18px">
+    <article class="card">
+      <h3>Most Important Principle</h3>
+      <p>Authorization and Data Integrity are paramount. Enforcing role checks directly at the Room repository boundary ensures that privileged administrative functions cannot be bypassed simply by manipulating UI visibility.</p>
+    </article>
+    <article class="card">
+      <h3>Greatest Vulnerability</h3>
+      <p>Insecure credential exposure and unthrottled authentication. Exposing password hashes in admin queries or permitting unlimited failed login attempts leaves systems vulnerable to offline attacks and brute-force credential stuffing.</p>
+    </article>
+    <article class="card">
+      <h3>Three Key Improvements</h3>
+      <p>1. Multi-factor authentication (MFA) for administrative accounts; 2. Centralized tamper-evident audit log streaming with cryptographic signatures; 3. Native biometric authentication integration via Android BiometricPrompt.</p>
+    </article>
+  </div>
+</section>
+
+<section class="section anchor" id="skills">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Skills</div>
+      <h2>Skills &amp; tech stack</h2>
+    </div>
+  </div>
+  <div class="grid">
+    <article class="card">
+      <h3>Android Architecture &amp; UI</h3>
+      <p>Kotlin, Jetpack Compose, Material 3, MVVM Pattern, Android ViewModel, Navigation Compose, Coroutines &amp; StateFlow.</p>
+    </article>
+    <article class="card">
+      <h3>Persistence &amp; Cryptography</h3>
+      <p>Room Database, Parameterized Queries, PBKDF2-HMAC-SHA256, SecureRandom Salt, AndroidX Security Crypto, Data Projections.</p>
+    </article>
+    <article class="card">
+      <h3>Security Auditing &amp; APIs</h3>
+      <p>Role-Based Access Control (RBAC), Account Lockout Policy, Audit Trail Logging, Retrofit 2, OkHttp3, ProGuard Rules.</p>
+    </article>
+  </div>
+  <div class="notice">
+    <b>Statement of AI Assistance:</b> Generative AI tools (including Claude and ChatGPT) were consulted for technical documentation structuring, threat modeling analysis, and code-review checklists in accordance with UKM academic guidelines. All architectural decisions, Android Kotlin implementations, Room security queries, and video demonstrations were executed, tested, and validated by the student team members.
+  </div>
+</section>
+
+<section class="section anchor" id="resources">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Resources</div>
+      <h2>Project links &amp; media</h2>
+    </div>
+  </div>
+  <div class="grid">
+    <div>
+      <div class="linkbox">
+        <span>Project VSR video</span>
+        <a href="https://youtu.be/0SGxBj4CvEg" target="_blank" rel="noopener noreferrer">https://youtu.be/0SGxBj4CvEg ↗</a>
+      </div>
+      <div class="linkbox">
+        <span>GitHub repository · source</span>
+        <a href="https://github.com/zhoud5508-rgb/SecureUserManagement" target="_blank" rel="noopener noreferrer">https://github.com/zhoud5508-rgb/SecureUserManagement</a>
+      </div>
+      <div class="linkbox">
+        <span>Course &amp; Programme</span>
+        <a href="#">TTTN3133 Secure Programming</a>
+      </div>
+      <div class="linkbox">
+        <span>Course Instructor</span>
+        <a href="#">Mr. Nelson</a>
+      </div>
+      <div class="linkbox">
+        <span>Open-source libraries &amp; frameworks</span>
+        <p style="margin:5px 0 0;font-size:12px;color:var(--muted)">Kotlin 2.2 · Jetpack Compose · Room 2.8.4 · Navigation Compose 2.9 · Security Crypto 1.1 · Coroutines 1.11 · Retrofit 2 · AGP 9.4</p>
+      </div>
+    </div>
+    <div class="video-embed" style="margin:0;min-height:240px;height:100%;">
+      <iframe loading="lazy" title="Project VSR Demonstration Video" src="https://www.youtube.com/embed/0SGxBj4CvEg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <small>Project VSR Demonstration Video (Unlisted)</small>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="submission">
+  <div class="section-head">
+    <div>
+      <div class="kicker">Group &amp; submission</div>
+      <h2>Team division of labor &amp; details</h2>
+    </div>
+  </div>
+  <div class="grid">
+    <article class="card">
+      <h3>Group members &amp; Division of Labor</h3>
+      <p style="margin-bottom:12px"><b>1. DAI SHUMAN</b> · Matric No: <b>A214536</b><br>
+      <b>Role:</b> Technical Lead &amp; Deployment (Member 1 / Webmaster)<br>
+      <b>Contribution:</b> GitHub repository architecture &amp; GitHub Pages deployment; frontend integration of team deliverables into responsive single-page portfolio; cross-browser layout &amp; mobile compatibility optimization; final live URL delivery and UKMFolio submission coordination.</p>
+
+      <p style="margin-bottom:12px"><b>2. ZHAO XINYU</b> · Matric No: <b>A214083</b><br>
+      <b>Role:</b> Media &amp; Demonstration Specialist (Member 2)<br>
+      <b>Contribution:</b> Full Project 2 VSR demonstration video production; recording, editing, and technical verification of security fix walkthrough videos (Fix 1 to Fix 4); YouTube unlisted media management and standard embed URL generation.</p>
+
+      <p style="margin-bottom:12px"><b>3. ZHOU QIANRUI</b> · Matric No: <b>A214534</b><br>
+      <b>Role:</b> Security Developer / Code Coordinator (Member 3)<br>
+      <b>Contribution:</b> Android Studio project source codebase structuring and repository maintenance; implementation and technical explanation of security vulnerabilities and solutions (RBAC, Data Protection, SQL Injection, Login Test); technical stack and dependency inventory preparation.</p>
+
+      <p><b>4. XIE YIRAN</b> · Matric No: <b>A207337</b><br>
+      <b>Role:</b> Documentation Lead &amp; Quality Assurance (Member 4)<br>
+      <b>Contribution:</b> Group academic identity compilation and verification; scenario problem statement authoring; reflective learning synthesis and team journey documentation; cross-platform QA inspection of links, video embeds, and mobile responsiveness.</p>
+    </article>
+
+    <article class="card">
+      <h3>UKMFolio submission entry</h3>
+      <p><b>Assignment Type:</b> Project 2</p>
+      <p><b>Course:</b> TTTN3133 Secure Programming</p>
+      <p><b>Instructor:</b> Mr. Nelson</p>
+      <p><b>Matric Numbers:</b> A214536, A214083, A214534, A207337</p>
+      <p><b>App Name:</b> Secure User Management</p>
+      <p><b>SDG Goal:</b> SDG 9 · Industry, Innovation and Infrastructure</p>
+      <p><b>VSR Video Link:</b> <a href="https://youtu.be/0SGxBj4CvEg" target="_blank" rel="noopener noreferrer">https://youtu.be/0SGxBj4CvEg</a></p>
+      <p><b>Source Code Link:</b> <a href="https://github.com/zhoud5508-rgb/SecureUserManagement" target="_blank" rel="noopener noreferrer">https://github.com/zhoud5508-rgb/SecureUserManagement</a></p>
+    </article>
+
+    <article class="card">
+      <h3>Deployment &amp; Quality Assurance</h3>
+      <p><b>Branch &amp; Directory:</b> <code>main</code> branch, <code>/ (root)</code> folder.</p>
+      <p><b>Verification Checklist:</b></p>
+      <p style="margin:4px 0">• 4 security case YouTube embeds verified (Unlisted)<br>
+      • Full Project VSR demonstration video verified<br>
+      • Responsive navigation with mobile hamburger menu<br>
+      • Complete removal of temporary prompts and template annotations<br>
+      • GitHub Pages published without 404 errors</p>
+    </article>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>TTTN3133 Secure Programming · e-Portfolio · 2026</span>
+  <span>Instructor: Mr. Nelson · Group: DAI SHUMAN (A214536), ZHAO XINYU (A214083), ZHOU QIANRUI (A214534), XIE YIRAN (A207337)</span>
+</footer>
+</main>
+
+<!-- Vanilla JavaScript for Mobile Hamburger Navigation -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const toggle = document.querySelector('.nav-toggle');
+  const menu = document.querySelector('.navlinks');
+  if (!toggle || !menu) return;
+
+  // Toggle mobile navigation menu
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const isOpen = menu.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  // Close menu when clicking on any anchor link (smooth scroll to section)
+  menu.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      menu.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close on Escape key press
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && menu.classList.contains('open')) {
+      menu.classList.remove('open');
+      toggle.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+});
+</script>
+</body>
+</html>
