@@ -311,15 +311,19 @@ main {
 }
 
 .pill {
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.22);
+  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  background: rgba(14, 55, 76, 0.35);
   backdrop-filter: blur(8px);
   border-radius: var(--radius-pill);
-  padding: 6px 13px;
+  padding: 6px 14px;
   color: #ffffff;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 850;
   letter-spacing: -0.01em;
+  -webkit-text-stroke: 0.6px #0c2b3b;
+  paint-order: stroke fill;
+  text-shadow: 1px 1px 0 #0c2b3b, -1px -1px 0 #0c2b3b, 1px -1px 0 #0c2b3b, -1px 1px 0 #0c2b3b, 0 2px 4px rgba(12, 43, 59, 0.7);
+  box-shadow: 0 4px 12px rgba(14, 55, 76, 0.15);
 }
 
 /* Hero Art Scene: Cloud-Hair Mascot + Computer + Watercolor Clouds */
@@ -620,36 +624,99 @@ main {
   border: 1px solid #c7e5f5;
 }
 
-/* Video Embeds */
-.video-embed {
-  position: relative;
-  aspect-ratio: 16/9;
+/* ==========================================================================
+   Refined Video Player Cards & Graceful Fallback (美化播放器与后备跳转)
+   ========================================================================== */
+.video-player-card {
+  margin: 15px 0 8px;
+  border-radius: 20px;
   overflow: hidden;
-  border-radius: 18px;
-  background: #0e3244;
-  margin: 14px 0 6px;
+  background: #09202c;
   border: 2px solid var(--pencil-line);
-  box-shadow: 0 6px 18px rgba(14, 50, 68, 0.12);
+  box-shadow: 0 8px 24px rgba(14, 50, 68, 0.18);
+  transition: all 0.22s ease;
 }
 
-.video-embed iframe {
+.video-player-card:hover {
+  border-color: var(--sky-primary);
+  box-shadow: 0 12px 32px rgba(27, 104, 146, 0.22);
+}
+
+.video-screen {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: radial-gradient(circle at center, #164057 0%, #09202c 100%);
+  overflow: hidden;
+}
+
+.video-screen iframe {
   width: 100%;
   height: 100%;
   border: 0;
+  display: block;
 }
 
-.video-embed small {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(14, 50, 68, 0.92);
-  color: #e5f4fc;
-  text-align: center;
-  padding: 6px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+.video-fallback-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #071923;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #c9e4f5;
+  font-size: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.video-status-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 750;
+  color: #d8edf8;
+  letter-spacing: 0.02em;
+  font-size: 12px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 8px #34d399;
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+.video-direct-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--crayon-yellow);
+  color: #3f2f05;
+  font-weight: 850;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  border: 1.5px solid #2b2003;
+  box-shadow: 2px 2px 0 #2b2003;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.video-direct-btn:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #2b2003;
+  background: #fff3a8;
+  text-decoration: none;
 }
 
 .evidence-links {
@@ -721,7 +788,7 @@ main {
 .linkbox {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
+  gap: 12px;
   align-items: center;
   padding: 16px 18px;
   background: white;
@@ -730,6 +797,8 @@ main {
   margin-top: 12px;
   box-shadow: 0 4px 12px rgba(27, 104, 146, 0.04);
   transition: all 0.2s ease;
+  flex-wrap: wrap;
+  word-break: break-word;
 }
 
 .linkbox:hover {
@@ -749,10 +818,25 @@ main {
   color: var(--sky-deep);
   font-weight: 800;
   text-decoration: none;
+  word-break: break-all;
 }
 
 .linkbox a:hover {
   text-decoration: underline;
+}
+
+.linkbox p {
+  width: 100%;
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
 }
 
 /* Reflection Section */
@@ -821,8 +905,103 @@ main {
   scroll-margin-top: 90px;
 }
 
+
+/* ==========================================================================
+   Code Dropdown Disclosure (代码下拉展示与收回)
+   ========================================================================== */
+.code-dropdown {
+  margin: 10px 0;
+  position: relative;
+}
+
+.code-dropdown summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--sky-pale);
+  color: var(--sky-navy);
+  border: 1.5px solid var(--pencil-line);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 2px 2px 0 var(--pencil-line);
+  transition: all 0.2s ease;
+}
+
+.code-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.code-dropdown summary:hover {
+  background: #ffffff;
+  border-color: var(--sky-primary);
+  transform: translateY(-1px);
+  box-shadow: 2px 4px 10px rgba(27, 104, 146, 0.12);
+}
+
+.code-dropdown[open] summary {
+  background: var(--crayon-yellow);
+  color: #3b2c04;
+  border-color: #3b2c04;
+  box-shadow: 2px 2px 0 #3b2c04;
+}
+
+.code-dropdown .arrow {
+  transition: transform 0.2s ease;
+  display: inline-block;
+  font-size: 11px;
+}
+
+.code-dropdown[open] .arrow {
+  transform: rotate(180deg);
+}
+
+.code-dropdown-content {
+  margin-top: 8px;
+  background: #091e2a;
+  color: #d8edf8;
+  border: 2px solid var(--pencil-line);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 0 10px 25px rgba(14, 55, 76, 0.16);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  overflow-x: auto;
+  animation: fadeInDown 0.2s ease;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.code-dropdown-content pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* Responsive Styles & Hamburger Menu Transformation */
 @media (max-width: 850px) {
+  .resources-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .linkbox {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .linkbox a {
+    width: 100%;
+  }
+
   .nav-toggle {
     display: flex;
   }
@@ -1177,76 +1356,259 @@ main {
   <div class="section-head">
     <div>
       <div class="kicker">Labs · Exercise 1</div>
+      <h2>Scenario &amp; Problem Statement</h2>
+    </div>
+  </div>
+  <article class="case" style="margin-bottom: 28px;">
+    <div class="case-top">
+      <span class="case-num">LAB OVERVIEW · SCENARIO &amp; PROBLEM STATEMENT</span>
+      <span class="status">Context Verified</span>
+    </div>
+    <h3 style="margin: 10px 0 12px; font-size: 18px; color: var(--sky-navy);">Secure User Management Overview</h3>
+    <p style="margin-bottom: 12px; font-size: 14.5px; line-height: 1.7;"><b>Project Scenario:</b> Many mobile applications face security risks because they do not protect local user data or check user access properly. This project presents an Android app that implements key security controls, such as PBKDF2 password hashing, role-based access, and account lockout. It demonstrates how to apply secure programming principles to build a safe user management system.</p>
+    <p style="font-size: 14.5px; line-height: 1.7; margin: 0;"><b>Problem Statement:</b> Standard Android user management apps often lack strong access controls, store credentials insecurely, and expose detailed login errors. These security gaps leave user accounts vulnerable to unauthorized access, credential leaks, and brute-force attacks.</p>
+  </article>
+
+  <div class="section-head" style="margin-top: 15px;">
+    <div>
+      <div class="kicker">Vulnerability solutions</div>
       <h2>Security cases</h2>
     </div>
   </div>
-  <div class="case-grid">
+    <div class="case-grid">
+    <!-- CASE 01 -->
     <article class="case">
       <div class="case-top">
-        <span class="case-num">CASE 01 · AUTHORIZATION</span>
+        <span class="case-num">CASE 01 · INPUT VALIDATION</span>
         <span class="status">Implemented · Verified</span>
       </div>
-      <h3>Role-Based Access Control</h3>
-      <p><b>Baseline:</b> Repository methods for reading all users/logs and changing roles or lock status initially lacked actor-role checks; hiding the admin screen was the only barrier.</p>
-      <p><b>Code change:</b> <code>UserRepository.requireAdmin()</code> now checks the active account's current Room role at the data boundary. Admin actions log the acting administrator.</p>
-      <p><b>Principles:</b> Authorization · Data Integrity</p>
-      <p><b>Reflection:</b> Enforcing role-based access checks at the repository boundary guarantees that unauthorized users cannot execute privileged operations even if the user interface state is tampered with.</p>
-      <div class="video-embed">
-        <iframe loading="lazy" title="Case 1 · Role-Based Access Control Video Demo" src="https://www.youtube.com/embed/QeDwXMIdTKI" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        <small>Case 1 Video Demonstration (Unlisted)</small>
+      <h3>Input Validation and Login Protection</h3>
+      <p><b>Baseline:</b> Registration initially saved the username and password without input checks.</p>
+      
+      <!-- Collapsible Before Code -->
+      <details class="code-dropdown">
+        <summary><span>⚡</span> Before code (illustrative baseline) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>fun register(username: String, password: String) {
+    // No input checks
+    saveUser(username, password)
+}</code></pre>
+        </div>
+      </details>
+
+      <p><b>Code change:</b> <code>SecurityUtils.kt</code>: <code>validateRegistration()</code> validates the username, password length, and password confirmation. Login failure handling is in <code>UserRepository.kt</code>, <code>login()</code>.</p>
+      
+      <!-- Collapsible Current Project Code -->
+      <details class="code-dropdown">
+        <summary><span>🔒</span> Current project code (source excerpts) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>// SecurityUtils.kt: validateRegistration()
+if (normalizedUsername.isBlank()) return "Username is required."
+if (normalizedUsername.length !in 3..32) {
+    return "Username must be 3 to 32 characters long."
+}
+if (password.length &lt; MIN_PASSWORD_LENGTH) {
+    return "Password must be at least 12 characters."
+}
+if (confirmPassword != password) return "Passwords do not match."</code></pre>
+        </div>
+      </details>
+
+      <p><b>Principles:</b> Input Validation · Authentication · Account Security</p>
+      <p><b>Reflection:</b> Validating input before saving an account prevents invalid registration data from entering the system. Login error handling also gives users feedback when authentication fails.</p>
+      
+      <!-- Video Player Card with Graceful Fallback -->
+      <div class="video-player-card">
+        <div class="video-screen">
+          <iframe loading="lazy" title="Case 1 · Input Validation and Login Protection Video Demo" src="https://www.youtube.com/embed/QeDwXMIdTKI?rel=0&amp;modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+        <div class="video-fallback-bar">
+          <span class="video-status-info"><span class="pulse-dot"></span> Case 1 Video Demonstration (Unlisted)</span>
+          <a class="video-direct-btn" href="https://youtu.be/QeDwXMIdTKI" target="_blank" rel="noopener noreferrer">▶ Watch on YouTube ↗</a>
+        </div>
       </div>
-      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserRepository.kt</code> · Run test (Live): <a href="https://youtu.be/QeDwXMIdTKI" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+      
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>SecurityUtils.kt</code>, <code>UserRepository.kt</code> · Run test (Live): submit the login form empty, then try one incorrect password. <a href="https://youtu.be/QeDwXMIdTKI" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
     </article>
 
+    <!-- CASE 02 -->
     <article class="case">
       <div class="case-top">
-        <span class="case-num">CASE 02 · DATA PROTECTION</span>
+        <span class="case-num">CASE 02 · PASSWORD SECURITY</span>
         <span class="status">Implemented · Verified</span>
       </div>
-      <h3>Password confidentiality and data minimization</h3>
-      <p><b>Baseline:</b> Admin listing returned full user entities, including password hashes and salts, although the UI only needed profile and role fields.</p>
-      <p><b>Code change:</b> The Room query now returns an <code>AdminUserSummary</code> projection without credential fields. Passwords use PBKDF2-HMAC-SHA256 with a random per-user salt and constant-time byte comparison.</p>
-      <p><b>Principles:</b> Confidentiality</p>
-      <p><b>Reflection:</b> Sensitive credential metadata and password hashes must never be exposed to the presentation layer. By employing data minimization queries and cryptographic PBKDF2 salting, offline cracking risks are significantly mitigated.</p>
-      <div class="video-embed">
-        <iframe loading="lazy" title="Case 2 · Password Confidentiality & Data Minimization Video Demo" src="https://www.youtube.com/embed/zpfu-e947wc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        <small>Case 2 Video Demonstration (Unlisted)</small>
+      <h3>Password Hashing and Password Change</h3>
+      <p><b>Baseline:</b> The illustrative baseline stores a password as plain text and compares the entered password directly with the stored value. This is not verified as the original project code.</p>
+      
+      <!-- Collapsible Before Code -->
+      <details class="code-dropdown">
+        <summary><span>⚡</span> Before code (illustrative baseline) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>data class User(
+    val username: String,
+    val password: String // Stored in plain text
+)
+fun login(input: String, user: User) = input == user.password</code></pre>
+        </div>
+      </details>
+
+      <p><b>Code change:</b> <code>SecurityUtils.kt</code>: <code>PasswordHasher</code> uses PBKDF2WithHmacSHA256 with 120,000 iterations. <code>UserRepository.kt</code>: <code>changePassword()</code> verifies the current password, generates a new salt, hashes the new password, and updates the user record.</p>
+      
+      <!-- Collapsible Current Project Code -->
+      <details class="code-dropdown">
+        <summary><span>🔒</span> Current project code (source excerpts) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>// SecurityUtils.kt: PasswordHasher
+private const val ITERATIONS = 120_000
+val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+ 
+// UserRepository.kt: changePassword()
+if (!PasswordHasher.verify(currentPassword, user.salt, user.passwordHash)) {
+    return@withContext Result.failure(
+        IllegalArgumentException("Current password is incorrect.")
+    )
+}
+val newSalt = PasswordHasher.generateSalt()
+val newHash = PasswordHasher.hash(newPassword, newSalt)
+userDao.update(user.copy(passwordHash = newHash, salt = newSalt))</code></pre>
+        </div>
+      </details>
+
+      <p><b>Principles:</b> Password Hashing · Authentication · Data Protection</p>
+      <p><b>Reflection:</b> Password hashing reduces the risk of exposing original passwords if stored data is accessed. Verifying the current password and generating a fresh salt also help protect the password-change process.</p>
+      
+      <!-- Video Player Card with Graceful Fallback -->
+      <div class="video-player-card">
+        <div class="video-screen">
+          <iframe loading="lazy" title="Case 2 · Password Hashing and Password Change Video Demo" src="https://www.youtube.com/embed/zpfu-e947wc?rel=0&amp;modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+        <div class="video-fallback-bar">
+          <span class="video-status-info"><span class="pulse-dot"></span> Case 2 Video Demonstration (Unlisted)</span>
+          <a class="video-direct-btn" href="https://youtu.be/zpfu-e947wc" target="_blank" rel="noopener noreferrer">▶ Watch on YouTube ↗</a>
+        </div>
       </div>
-      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserData.kt</code>, <code>SecurityUtils.kt</code> · Run test (Live): <a href="https://youtu.be/zpfu-e947wc" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+      
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>SecurityUtils.kt</code>, <code>UserRepository.kt</code> · Run test (Live): open Change Password, enter the current password and a matching new password, then tap Update Password. <a href="https://youtu.be/zpfu-e947wc" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
     </article>
 
+    <!-- CASE 03 -->
     <article class="case">
       <div class="case-top">
-        <span class="case-num">CASE 03 · SQL INJECTION</span>
+        <span class="case-num">CASE 03 · SESSION SECURITY</span>
         <span class="status">Implemented · Verified</span>
       </div>
-      <h3>Parameterized Room queries</h3>
-      <p><b>Baseline:</b> The supplied DAO already used Room bind parameters such as <code>:username</code> and <code>:id</code>; no concatenated user-controlled SQL was found. This is a secure control, not a claimed SQL injection vulnerability.</p>
-      <p><b>Code change:</b> Preserve the bound queries and add restrictive username validation; do not construct query strings from user input.</p>
-      <p><b>Principles:</b> Data Integrity · Confidentiality</p>
-      <p><b>Reflection:</b> Utilizing Room parameterized queries effectively neutralizes SQL injection threats by treating user inputs as strict literals rather than executable SQL commands.</p>
-      <div class="video-embed">
-        <iframe loading="lazy" title="Case 3 · Parameterized Room Queries (SQL Injection Prevention) Video Demo" src="https://www.youtube.com/embed/gWAKd-BSggk" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        <small>Case 3 Video Demonstration (Unlisted)</small>
+      <h3>Encrypted Session Storage</h3>
+      <p><b>Baseline:</b> The illustrative baseline stores the user ID and role in ordinary SharedPreferences. This is not verified as the original project code.</p>
+      
+      <!-- Collapsible Before Code -->
+      <details class="code-dropdown">
+        <summary><span>⚡</span> Before code (illustrative baseline) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>val prefs = context.getSharedPreferences("session", Context.MODE_PRIVATE)
+prefs.edit().putLong("user_id", userId).putString("role", role).apply()</code></pre>
+        </div>
+      </details>
+
+      <p><b>Code change:</b> <code>SecurityUtils.kt</code>: <code>SessionManager</code> uses EncryptedSharedPreferences with an AES-256-GCM MasterKey, AES256_SIV for preference keys, and AES256_GCM for preference values.</p>
+      
+      <!-- Collapsible Current Project Code -->
+      <details class="code-dropdown">
+        <summary><span>🔒</span> Current project code (source excerpts) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>// SecurityUtils.kt: SessionManager
+private val encryptedPrefs = EncryptedSharedPreferences.create(
+    context,
+    "secure_user_management_session",
+    MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+)
+ 
+fun saveSession(userId: Long, username: String, role: String) {
+    encryptedPrefs.edit().putLong("user_id", userId)
+      .putString("username", username).putString("role", role).apply()
+}</code></pre>
+        </div>
+      </details>
+
+      <p><b>Principles:</b> Data Confidentiality · Secure Session Management</p>
+      <p><b>Reflection:</b> Encrypting session data helps protect locally stored identity and role information. Session handling should still be tested to ensure logout clears or invalidates the active session as intended.</p>
+      
+      <!-- Video Player Card with Graceful Fallback -->
+      <div class="video-player-card">
+        <div class="video-screen">
+          <iframe loading="lazy" title="Case 3 · Encrypted Session Storage Video Demo" src="https://www.youtube.com/embed/gWAKd-BSggk?rel=0&amp;modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+        <div class="video-fallback-bar">
+          <span class="video-status-info"><span class="pulse-dot"></span> Case 3 Video Demonstration (Unlisted)</span>
+          <a class="video-direct-btn" href="https://youtu.be/gWAKd-BSggk" target="_blank" rel="noopener noreferrer">▶ Watch on YouTube ↗</a>
+        </div>
       </div>
-      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserData.kt</code> · Run test (Live): <a href="https://youtu.be/gWAKd-BSggk" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+      
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>SecurityUtils.kt</code>, <code>SessionManager</code> · Run test (Live): sign in and show Home, tap Logout, and show the Welcome screen. <a href="https://youtu.be/gWAKd-BSggk" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
     </article>
 
+    <!-- CASE 04 -->
     <article class="case">
       <div class="case-top">
-        <span class="case-num">CASE 04 · LOGIN TEST</span>
+        <span class="case-num">CASE 04 · DATABASE &amp; AUDIT LOGGING</span>
         <span class="status">Implemented · Verified</span>
       </div>
-      <h3>Account lockout and generic responses</h3>
-      <p><b>Baseline:</b> The app counted failed attempts and locked an account after three failures, but returned a distinct message when a known account was locked.</p>
-      <p><b>Code change:</b> Locked and invalid-credential paths now return the same generic response while security events remain logged without passwords.</p>
-      <p><b>Principles:</b> Authentication · Confidentiality</p>
-      <p><b>Reflection:</b> Implementing automated account lockout with generic error messages protects against user enumeration and automated brute-force attacks while maintaining defense traceability in security logs.</p>
-      <div class="video-embed">
-        <iframe loading="lazy" title="Case 4 · Account Lockout & Generic Responses (Login Test) Video Demo" src="https://www.youtube.com/embed/YZWW2nDQklg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        <small>Case 4 Video Demonstration (Unlisted)</small>
+      <h3>Room Database and Activity Logs</h3>
+      <p><b>Baseline:</b> The illustrative baseline stores users in an in-memory list and has no persistent storage or activity log. This is not verified as the original project code.</p>
+      
+      <!-- Collapsible Before Code -->
+      <details class="code-dropdown">
+        <summary><span>⚡</span> Before code (illustrative baseline) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>val users = mutableListOf&lt;User&gt;()
+fun addUser(user: User) {
+    users.add(user) // Memory only
+}
+// No persistent storage or activity log</code></pre>
+        </div>
+      </details>
+
+      <p><b>Code change:</b> <code>UserData.kt</code>: <code>UserDao</code> provides database queries and update operations. <code>UserRepository.kt</code>: <code>logAction()</code> inserts an <code>ActivityLogEntity</code> with the user ID, username, action, and timestamp.</p>
+      
+      <!-- Collapsible Current Project Code -->
+      <details class="code-dropdown">
+        <summary><span>🔒</span> Current project code (source excerpts) <span class="arrow">▾</span></summary>
+        <div class="code-dropdown-content">
+          <pre><code>// UserData.kt: UserDao
+@Query("SELECT * FROM users WHERE username = :username LIMIT 1")
+suspend fun getByUsername(username: String): UserEntity?
+ 
+@Update
+suspend fun update(user: UserEntity)
+ 
+// UserRepository.kt: logAction()
+activityLogDao.insert(
+    ActivityLogEntity(
+        userId = userId,
+        username = username,
+        action = action,
+        timestamp = System.currentTimeMillis()
+    )
+)</code></pre>
+        </div>
+      </details>
+
+      <p><b>Principles:</b> Data Persistence · Accountability · Audit Logging</p>
+      <p><b>Reflection:</b> A Room database supports persistent user records, while activity logs help trace important actions. Logs are most useful when they accurately identify the actor and record meaningful security-related events.</p>
+      
+      <!-- Video Player Card with Graceful Fallback -->
+      <div class="video-player-card">
+        <div class="video-screen">
+          <iframe loading="lazy" title="Case 4 · Room Database and Activity Logs Video Demo" src="https://www.youtube.com/embed/YZWW2nDQklg?rel=0&amp;modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        </div>
+        <div class="video-fallback-bar">
+          <span class="video-status-info"><span class="pulse-dot"></span> Case 4 Video Demonstration (Unlisted)</span>
+          <a class="video-direct-btn" href="https://youtu.be/YZWW2nDQklg" target="_blank" rel="noopener noreferrer">▶ Watch on YouTube ↗</a>
+        </div>
       </div>
-      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserRepository.kt</code> · Run test (Live): <a href="https://youtu.be/YZWW2nDQklg" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
+      
+      <p class="evidence-links"><b>Evidence:</b> Source Code (GitHub): <code>UserData.kt</code>, <code>UserRepository.kt</code> · Run test (Live): open Activity Log and show Successful Login, Password Change, or a role-change entry. <a href="https://youtu.be/YZWW2nDQklg" target="_blank" rel="noopener noreferrer">YouTube Demo ↗</a></p>
     </article>
   </div>
   <p class="notice"><b>Verification Status:</b> All four security vulnerability solutions and defense-in-depth controls have been successfully integrated, validated on Android Studio emulator, and demonstrated with live unlisted YouTube walkthrough videos.</p>
@@ -1266,9 +1628,14 @@ main {
     </div>
     <h3>Secure User Management</h3>
     <p><b>Scenario &amp; Problem Statement:</b> Modern Android mobile applications handle critical personal identities and credentials, making them prime targets for unauthorized access, data exfiltration, and injection attacks. Secure User Management demonstrates a defense-in-depth architecture addressing authentication weaknesses, insecure direct object references, and data exposure in local storage. By implementing Role-Based Access Control, cryptographic credential protection, parameterized database queries, and brute-force account lockout, the project provides a hardened and verifiable user lifecycle solution.</p>
-    <div class="video-embed">
-      <iframe loading="lazy" title="Secure User Management Project Demonstration (VSR)" src="https://www.youtube.com/embed/0SGxBj4CvEg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-      <small>Project VSR Video Demonstration (Unlisted)</small>
+    <div class="video-player-card">
+      <div class="video-screen">
+        <iframe loading="lazy" title="Secure User Management Project Demonstration (VSR)" src="https://www.youtube.com/embed/0SGxBj4CvEg?rel=0&amp;modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <div class="video-fallback-bar">
+        <span class="video-status-info"><span class="pulse-dot"></span> Project 2 VSR Demonstration · Full Walkthrough</span>
+        <a class="video-direct-btn" href="https://youtu.be/0SGxBj4CvEg" target="_blank" rel="noopener noreferrer">▶ Watch VSR on YouTube ↗</a>
+      </div>
     </div>
     <p><b>Project Reflection:</b> Through this project, our team gained practical experience bridging theoretical security principles with real-world Android implementation. We demonstrated that security cannot be treated as an afterthought in UI layers, but must be strictly enforced at repository and data boundaries. Systematic code auditing and live video verifications reinforced our commitment to defense-in-depth engineering.</p>
     <div class="actions" style="margin-top:12px">
@@ -1371,7 +1738,8 @@ main {
       <h2>Project links &amp; media</h2>
     </div>
   </div>
-  <div class="grid">
+  <div class="resources-grid">
+    <!-- Column 1: Project & Academic Links -->
     <div>
       <div class="linkbox">
         <span>Project VSR video</span>
@@ -1394,9 +1762,29 @@ main {
         <p style="margin:5px 0 0;font-size:12px;color:var(--muted)">Kotlin 2.2 · Jetpack Compose · Room 2.8.4 · Navigation Compose 2.9 · Security Crypto 1.1 · Coroutines 1.11 · Retrofit 2 · AGP 9.4</p>
       </div>
     </div>
-    <div class="video-embed" style="margin:0;min-height:240px;height:100%;">
-      <iframe loading="lazy" title="Project VSR Demonstration Video" src="https://www.youtube.com/embed/0SGxBj4CvEg" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-      <small>Project VSR Demonstration Video (Unlisted)</small>
+
+    <!-- Column 2: 4 Security Case Demonstration YouTube Links -->
+    <div>
+      <div class="linkbox">
+        <span>Case 1 · Input Validation &amp; Protection</span>
+        <a href="https://youtu.be/QeDwXMIdTKI" target="_blank" rel="noopener noreferrer">https://youtu.be/QeDwXMIdTKI ↗</a>
+      </div>
+      <div class="linkbox">
+        <span>Case 2 · Password Hashing &amp; Security</span>
+        <a href="https://youtu.be/zpfu-e947wc" target="_blank" rel="noopener noreferrer">https://youtu.be/zpfu-e947wc ↗</a>
+      </div>
+      <div class="linkbox">
+        <span>Case 3 · Encrypted Session Storage</span>
+        <a href="https://youtu.be/gWAKd-BSggk" target="_blank" rel="noopener noreferrer">https://youtu.be/gWAKd-BSggk ↗</a>
+      </div>
+      <div class="linkbox">
+        <span>Case 4 · Room Database &amp; Activity Logs</span>
+        <a href="https://youtu.be/YZWW2nDQklg" target="_blank" rel="noopener noreferrer">https://youtu.be/YZWW2nDQklg ↗</a>
+      </div>
+      <div class="linkbox">
+        <span>Case Demos Status</span>
+        <p style="margin:5px 0 0;font-size:12px;color:var(--muted)">All 4 security case test recordings are hosted unlisted on YouTube.</p>
+      </div>
     </div>
   </div>
 </section>
